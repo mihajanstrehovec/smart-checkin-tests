@@ -16,10 +16,10 @@ export interface GuestCheckinPageTypes{
 export type Gender = 'M' | 'F'
 export type DocumentType = 'I' | 'P' | 'V'
 
-export type NumberRangeUnion<Start extends number, End extends number, Acc extends string[] = [`${Start}`]> = 
+export type NumberRangeUnion<Start extends number, End extends number, Acc extends number[] = [Start]> = 
   Acc['length'] extends End
     ? Acc[number]
-    : NumberRangeUnion<Start, End, [...Acc, `${Acc['length']}`]>;
+    : NumberRangeUnion<Start, End, [...Acc, Acc['length']]>;
 
 export interface Person {
     guestTitle: string
@@ -27,9 +27,9 @@ export interface Person {
     lastName: string
     gender: Gender
     birthDate: {
-        day: NumberRangeUnion<1,32>
-        month: NumberRangeUnion<1,13>
-        year: string
+        day: number
+        month: number
+        year: number
     },
     nationality: string
     documentType: DocumentType

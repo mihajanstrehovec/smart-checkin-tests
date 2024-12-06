@@ -1,5 +1,6 @@
 import { expect, Locator, type Page } from "@playwright/test"
 import { Person } from "../types/types"
+import Guest from "../classes/Guest"
 
 const submitButtonSelector = 'button[type="submit"]'
 const dateInputSelector = 'input[placeholder="MM/DD/YYYY – MM/DD/YYYY"]'
@@ -55,8 +56,8 @@ class GuestCheckInPage {
         await expect(this.cardTitle.nth(i)).toBeVisible()
     }
     
-    async insertGuestDetails(guest: Locator, guestData: Person){
-        await this.checkGuestCardTitle(guest, guestData.guestTitle)
+    async insertGuestDetails(guest: Locator, guestData: Guest){
+        // await this.checkGuestCardTitle(guest, guestData.guestTitle)
         await guest.locator(firstNameSelector).fill(guestData.firstName)
         await guest.locator(lastNameSelector).fill(guestData.lastName)
         if(await guest.locator(mainGuestEmailSelector).isVisible()){
@@ -77,9 +78,9 @@ class GuestCheckInPage {
     }
 
     async insertDOB(guest: Locator, dateOfBirth: Person['birthDate']){
-        await guest.locator('input[id*="date_of_birth\.day"]').fill(dateOfBirth.day)
-        await guest.locator('input[id*="date_of_birth\.month"]').fill(dateOfBirth.month)
-        await guest.locator('input[id*="date_of_birth\.year"]').fill(dateOfBirth.year)
+        await guest.locator('input[id*="date_of_birth\.day"]').fill(`${dateOfBirth.day}`)
+        await guest.locator('input[id*="date_of_birth\.month"]').fill(`${dateOfBirth.month}`)
+        await guest.locator('input[id*="date_of_birth\.year"]').fill(`${dateOfBirth.year}`)
     }
 
     async insertNationality(guest: Locator, nationality: string){

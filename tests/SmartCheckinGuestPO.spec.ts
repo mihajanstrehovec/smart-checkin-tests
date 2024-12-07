@@ -1,7 +1,7 @@
-import POmanager from '../pageobjects/POmanager.ts'
-import test, { Locator } from '@playwright/test'
-import { Guests } from '../types/types'
-import Guest from '../classes/Guest.ts'
+import POmanager from '../pageobjects/POmanager.ts';
+import test, { Locator } from '@playwright/test';
+import { Guests } from '../types/types';
+import Guest from '../classes/Guest.ts';
 
 // const testData: Guests = [
 //   {
@@ -145,31 +145,27 @@ import Guest from '../classes/Guest.ts'
 //     documentNumber: 'J34567890'
 //   }
 // ];
-const url: string = 'https://qa.guest.checkin.si/en/apartma-vijolica/dates'
+const url: string = 'https://qa.guest.checkin.si/en/apartma-vijolica/dates';
 
-const testData = [new Guest(), new Guest(), new Guest(), new Guest(), new Guest()]
+const testData = [new Guest(false), new Guest(false), new Guest(), new Guest(), new Guest()];
 
-test(`@Guest Guest checkin`, async ({page}) => {
-  const poManager = new POmanager(page)
-  const guestCheckinPage = poManager.getGuestCheckinPage()
-  await guestCheckinPage.goTo(url)
-  await guestCheckinPage.selectCheckInOutDates(7,12)
-  await guestCheckinPage.clickSubmit()
-  for(let i = 1; i < testData.length; i++){
-    await guestCheckinPage.addGuest(i)
+test(`@Guest Guest checkin`, async ({ page }) => {
+  const poManager = new POmanager(page);
+  const guestCheckinPage = poManager.getGuestCheckinPage();
+  await guestCheckinPage.goTo(url);
+  await guestCheckinPage.selectCheckInOutDates(7, 12);
+  await page.pause();
+  await guestCheckinPage.clickSubmit();
+  for (let i = 1; i < testData.length; i++) {
+    await guestCheckinPage.addGuest(i);
   }
-  const guests: Locator = page.locator('.MuiPaper-root')
-  const guestCount: number = await guests.count()
-  for(let i = 0; i < guestCount; i++){
-      await guestCheckinPage.insertGuestDetails(guests.nth(i), testData[i])
+  const guests: Locator = page.locator('.MuiPaper-root');
+  const guestCount: number = await guests.count();
+  for (let i = 0; i < guestCount; i++) {
+    await guestCheckinPage.insertGuestDetails(guests.nth(i), testData[i]);
   }
-  await page.pause()
-  await guestCheckinPage.clickSubmit()
-  await guestCheckinPage.clickSubmit()
-  await page.pause()
-})
-
-  
-
-
-
+  await page.pause();
+  await guestCheckinPage.clickSubmit();
+  await guestCheckinPage.clickSubmit();
+  await page.pause();
+});

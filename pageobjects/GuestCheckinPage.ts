@@ -1,7 +1,7 @@
 import { expect, Locator, type Page } from '@playwright/test';
 import { Person } from '../types/types';
 import Guest from '../classes/Guest';
-import { getMonthNumberFromName } from './helpers/dates';
+import { getMonthNumberFromName } from '../helpers/dates';
 
 const submitButtonSelector = 'button[type="submit"]';
 const dateInputSelector = 'input[placeholder="MM/DD/YYYY – MM/DD/YYYY"]';
@@ -48,11 +48,20 @@ class GuestCheckInPage {
     const monthAndYear = await this.page.locator('(//span[contains(@class, "MuiTypography-subtitle1")])[2]').textContent();
     const [month, year] = (monthAndYear ?? '').split(' ');
     const monthNumber = getMonthNumberFromName(month);
-    await this.datePicker.nth(1).locator('button').nth(start).click();
-    await this.datePicker.nth(1).locator('button').nth(end).click();
+    await this.datePicker
+      .nth(1)
+      .locator('button')
+      .nth(start - 1)
+      .click();
+    await this.datePicker
+      .nth(1)
+      .locator('button')
+      .nth(end - 1)
+      .click();
     expect(await this.dateInput.getAttribute('value')).toMatch(
-      `${monthNumber}/${String(start + 1).padStart(2, '0')}/${year} – ${monthNumber}/${String(end + 1).padStart(2, '0')}/${year}`
+      `${monthNumber}/${String(start).padStart(2, '0')}/${year} – ${monthNumber}/${String(end).padStart(2, '0')}/${year}`
     );
+    expect(this.submitButton).toContainText(`Continue with ${end - start} night`);
   }
   async goTo(url: string) {
     await this.page.goto(url);
@@ -64,9 +73,8 @@ class GuestCheckInPage {
     await this.addGuestLocator.click();
     await expect(this.cardTitle.nth(i)).toBeVisible();
   }
-
   async insertGuestDetails(guest: Locator, guestData: Guest) {
-    // await this.checkGuestCardTitle(guest, guestData.guestTitle)
+    await this.checkGuestCardTitle(guest, guestData.title);
     await guest.locator(firstNameSelector).fill(guestData.firstName);
     await guest.locator(lastNameSelector).fill(guestData.lastName);
     if (await guest.locator(mainGuestEmailSelector).isVisible()) {

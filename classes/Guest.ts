@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 
 class Guest {
+  title: string;
   firstName: string;
   lastName: string;
   gender: string;
@@ -13,8 +14,9 @@ class Guest {
   documentType: string;
   documentNumber: string;
 
-  constructor(isAdult = true) {
+  constructor(title: string, isAdult = true) {
     const currentYear = new Date().getFullYear();
+    this.title = title;
     this.firstName = faker.person.firstName();
     this.lastName = faker.person.lastName();
     this.gender = faker.string.fromCharacters(['F', 'M']);

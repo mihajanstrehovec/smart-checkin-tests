@@ -14,7 +14,7 @@ class Guest {
   documentType: string;
   documentNumber: string;
 
-  constructor(title: string, isAdult = true) {
+  constructor(title: string, ageGroup: 'adult' | 'child' | 'minor') {
     const currentYear = new Date().getFullYear();
     this.title = title;
     this.firstName = faker.person.firstName();
@@ -22,13 +22,30 @@ class Guest {
     this.gender = faker.string.fromCharacters(['F', 'M']);
     this.birthDate = {
       month: faker.number.int({ min: 1, max: 12 }),
-      year: faker.number.int({ min: isAdult ? 1920 : currentYear - 17, max: isAdult ? currentYear - 18 : currentYear }),
+      year: this.generateBirthYear(ageGroup),
       day: 0
     };
     this.birthDate.day = this.generateBirthDateDay();
     this.nationality = faker.location.country();
     this.documentType = faker.string.fromCharacters(['I', 'P', 'V']);
     this.documentNumber = faker.string.alphanumeric(8);
+  }
+
+  generateBirthYear(ageGroup: 'adult' | 'child' | 'minor') {
+    const currentYear = new Date().getFullYear();
+    let year = 0;
+    switch (ageGroup) {
+      case 'adult':
+        year = faker.number.int({ min: 1920, max: currentYear - 19 });
+        break;
+      case 'child':
+        year = faker.number.int({ min: currentYear - 17, max: currentYear - 8 });
+        break;
+      case 'minor':
+        year = faker.number.int({ min: currentYear - 6, max: currentYear });
+        break;
+    }
+    return year;
   }
 
   generateBirthDateDay() {

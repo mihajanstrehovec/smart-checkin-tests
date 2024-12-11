@@ -17,6 +17,9 @@ const docuemntTypeDropDownSelector = '[aria-labelledby*="document_type_label"][r
 const documentNumberSelector = 'input[id*=document_number]';
 const nationalityPopUpSelector = 'div[role="presentation"]';
 const prevMonthSelector = '(//button[@title="Previous month"])[1]';
+const processingFeeSelector = '//tr[.//p[contains(text(), "Processing fee")]]//td[last()]//p';
+const totalPriceSelector = '//tr[.//p[contains(text(), "Total")]]//td[last()]//p';
+const numberOfPetsSelecotr = 'input#number_of_pets';
 
 class GuestCheckInPage {
   page: Page;
@@ -29,6 +32,9 @@ class GuestCheckInPage {
   guestFormBox: Locator;
   documentTypeDropDown: Locator;
   nationalityPopUp: Locator;
+  numberOfPets: Locator;
+  processingFee: Locator;
+  totalPrice: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -41,6 +47,9 @@ class GuestCheckInPage {
     this.guestFormBox = page.locator(guestFormBoxSelector);
     this.documentTypeDropDown = page.locator(docuemntTypeDropDownSelector);
     this.nationalityPopUp = page.locator(nationalityPopUpSelector);
+    this.processingFee = page.locator(processingFeeSelector);
+    this.totalPrice = page.locator(totalPriceSelector);
+    this.numberOfPets = page.locator(numberOfPetsSelecotr);
   }
   async selectCheckInOutDates(start: number, end: number) {
     await this.dateInput.click();
@@ -124,6 +133,18 @@ class GuestCheckInPage {
         break;
       }
     }
+  }
+
+  async enterNumberOfPets(numberOfPets: number) {
+    await this.numberOfPets.fill(`${numberOfPets}`);
+  }
+
+  async verifyTaxesAndFees(taxSum: number, petFee: number) {
+    const processingFee = await this.processingFee.textContent();
+    const processingFeeAmmount = processingFee?.split('€')[0];
+    const total = taxSum + petFee + Number(processingFeeAmmount?.replace(',', '.'));
+    const totalText = `${Math.round(total * 100) / 100} €`;
+    expect(await this.totalPrice.textContent(), totalText);
   }
 }
 
